@@ -3,20 +3,50 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-// TODO: Import models yang dibutuhkan (Kamar, Penyewa, KontrakSewa, Pembayaran)
+use Carbon\Carbon;
+
+
+use App\Models\Kamar;
+use App\Models\Penyewa;
+use App\Models\KontrakSewa;
+use App\Models\Pembayaran;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        // TODO: Hitung statistik untuk dashboard:
-        // - Total kamar
-        // - Jumlah kamar tersedia
-        // - Jumlah kamar terisi
-        // - Total pendapatan bulan ini (gunakan whereMonth untuk filter)
-        // - Jumlah pembayaran tertunggak
-        
-        // TODO: Return view 'dashboard' dengan data statistik
-        // BONUS: Tambahkan data untuk chart/grafik
+     
+        $totalKamar = Kamar::count();
+
+    
+        $kamarTersedia = Kamar::where('status', 'tersedia')->count();
+        $kamarTerisi = Kamar::where('status', 'terisi')->count();
+
+       
+        $pendapatanBulanIni = Pembayaran::whereMonth('tanggal_bayar', now()->month)
+            ->whereYear('tanggal_bayar', now()->year)
+            ->where('status', 'lunas') 
+            ->sum('jumlah_bayar');
+
+    
+        $pembayaranTertunggak = Pembayaran::where('status', 'tertunggak')->count();
+
+       
+        $grafikPendapatan = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $grafikPendapatan[] = Pembayaran::whereMonth('tanggal_bayar', $i)
+                ->whereYear('tanggal_bayar', now()->year)
+                ->where('status', 'lunas')
+                ->sum('jumlah_bayar');
+        }
+
+        return view('dashboard.index', compact(
+            'totalKamar',
+            'kamarTersedia',
+            'kamarTerisi',
+            'pendapatanBulanIni',
+            'pembayaranTertunggak',
+            'grafikPendapatan'
+        ));
     }
 }

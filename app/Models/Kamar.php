@@ -7,9 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Kamar extends Model
 {
     protected $table = 'kamar';
+    protected $guarded = ['id']; 
+
+public function kontrakSewa() {
+    return $this->hasMany(KontrakSewa::class);
+}
+
     
-    // TODO: Definisikan kolom yang dapat diisi (mass assignment)
+    
     protected $fillable = [];
     
-    // TODO: Definisikan relasi ke tabel lain
+   
 }

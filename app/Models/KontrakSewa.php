@@ -6,13 +6,36 @@ use Illuminate\Database\Eloquent\Model;
 
 class KontrakSewa extends Model
 {
-    protected $table = 'kontrak_sewa';
+    protected $table = 'kontrak_sewa'; 
     
-    // TODO: Definisikan kolom yang dapat diisi (mass assignment)
-    protected $fillable = [];
+    protected $fillable = [
+        'penyewa_id',
+        'kamar_id',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'harga_bulanan',
+        'status',
+    ];
     
-    // TODO: Cast kolom tanggal ke tipe date
-    protected $casts = [];
+    protected $casts = [
+        'tanggal_mulai' => 'date',
+        'tanggal_selesai' => 'date',
+        'harga_bulanan' => 'decimal:2',
+    ];
     
-    // TODO: Definisikan relasi ke tabel Penyewa, Kamar, dan Pembayaran
+
+    public function penyewa()
+    {
+        return $this->belongsTo(Penyewa::class);
+    }
+
+    public function kamar()
+    {
+        return $this->belongsTo(Kamar::class);
+    }
+
+    public function pembayaran()
+    {
+        return $this->hasMany(Pembayaran::class);
+    }
 }
